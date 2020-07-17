@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Drum Set</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+
+    <!-- Don't use this in production: -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Drum Set</h1>
+        <h2>Click the buttons below or use keys Q,W,E...</h2>
+      </div>
+      <div id="root"></div>
+    </div>
+
+    <script type="text/babel">
+      const drumSounds = [
+        {
+          keyCode: 81,
+          keyText: "park",
+          id: "Q",
+          soundClip: "beats/257[kb]080_walk-in-the-park.aif.mp3",
+        },
+        {
+          keyCode: 87,
+          keyText: "groove",
+          id: "W",
+          soundClip: "beats/257[kb]080_too-much-pot-groove.aif.mp3",
+        },
+        {
+          keyCode: 69,
+          keyText: "beat",
+          id: "E",
+          soundClip: "beats/263[kb]080_queens-beat.wav.mp3",
+        },
+        {
+          keyCode: 65,
+          keyText: "stretched",
+          id: "A",
+          soundClip: "beats/268[kb]077_stretched_to_no_end.aif.mp3",
+        },
+        {
+          keyCode: 83,
+          keyText: "fool",
+          id: "S",
+          soundClip: "beats/269[kb]077_FoolYourself.wav.mp3",
+        },
+        {
+          keyCode: 68,
+          keyText: "swing",
+          id: "D",
+          soundClip: "beats/275[kb]075_distorto-swinger.aif.mp3",
+        },
+        {
+          keyCode: 90,
+          keyText: "tribal",
+          id: "Z",
+          soundClip: "beats/287[kb]072_minimal_tribal.aif.mp3",
+        },
+        {
+          keyCode: 88,
+          keyText: "triangle",
+          id: "X",
+          soundClip: "beats/298[kb]070_triangle_pattern.aif.mp3",
+        },
+        {
+          keyCode: 67,
+          keyText: "hiphop",
+          id: "C",
+          soundClip: "beats/350[kb]059_808-hiphop.aif.mp3",
+        },
+      ];
+      class DrumMachine extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = {};
+        }
+        render() {
+          let allButtons = drumSounds.map((d, i) => {
+            return (
+              <DrumButton
+                id={d.id}
+                key={i}
+                soundClip={d.soundClip}
+                keyCode={d.keyCode}
+                keyText={d.keyText}
+              />
+            );
+          });
+
+          return (
+            <div id="drum-machine">
+              <div id="drum-buttons">{allButtons}</div>
+              <div id="display"></div>
+            </div>
+          );
+        }
+      }
+      class DrumButton extends React.Component {
+        constructor(props) {
+          super(props);
+          this.playSound = this.playSound.bind(this);
+          this.keyPressed = this.keyPressed.bind(this);
+        }
+        componentDidMount() {
+          document.addEventListener("keydown", this.keyPressed);
+        }
+        componentWillUnmount() {
+          document.removeEventListener("keydown", this.keyPressed);
+        }
+        keyPressed(e) {
+          if (e.keyCode === this.props.keyCode) {
+            this.playSound();
+          }
+        }
+        playSound() {
+          const theSoundClip = document.getElementById(this.props.id);
+          theSoundClip.currentTime = 0;
+          theSoundClip.play();
+          theSoundClip.parentElement.classList.add("active");
+          theSoundClip.addEventListener(
+            "timeupdate",
+            function () {
+              if (theSoundClip.currentTime >= 0.1) {
+                theSoundClip.pause();
+                theSoundClip.parentElement.classList.remove("active");
+              }
+            },
+            false
+          );
+          document.getElementById(
+            "display"
+          ).textContent = this.props.keyText.toUpperCase();
+        }
+        render() {
+          return (
+            <div
+              className="drum-pad"
+              onClick={this.playSound}
+              id={this.props.keyText}
+            >
+              <audio
+                id={this.props.id}
+                className="clip"
+                src={this.props.soundClip}
+                type="audio/mp3"
+              />
+              {this.props.id}
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(<DrumMachine />, document.getElementById("root"));
+    </script>
+  </body>
+</html>
