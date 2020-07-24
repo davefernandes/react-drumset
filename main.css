@@ -66,7 +66,7 @@ body {
 
 .drum-pad {
   position: relative;
-  flex: 1 0 26%;
+  flex: 1 0 24%;
   margin: 15px;
   height: 60px;
   background: rgb(58, 58, 61);
